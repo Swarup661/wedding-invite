@@ -327,64 +327,60 @@ footer .f-small{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;ma
   tick();
 })();
 </script>
-<script>
 
-/* ---------- BACKGROUND MUSIC (autoplay + graceful fallback) ---------- */
-(function(){
+<script>
+(function () {
   const bgm = document.getElementById('bgm');
+  if (!bgm) return;
+
   bgm.volume = 0.45;
 
+  // Create a visible music button
   const fab = document.createElement('button');
-  fab.className = 'music-fab';
-  fab.setAttribute('aria-label','Toggle music');
+  fab.className = 'music-fab show';
+  fab.type = 'button';
+  fab.setAttribute('aria-label', 'Play or pause wedding music');
   fab.innerHTML = '♪';
+  fab.style.display = 'flex';
   document.body.appendChild(fab);
-
-  const prompt = document.createElement('div');
-  prompt.className = 'music-prompt';
-  prompt.textContent = '\u{1F3B5} Tap anywhere to play our song';
-  document.body.appendChild(prompt);
 
   let playing = false;
 
-  function onPlay(){
-    playing = true;
-    fab.classList.add('show','pulse');
-    fab.innerHTML = '♪';
-    prompt.classList.remove('show');
-  }
-  function onPause(){
-    playing = false;
-    fab.classList.remove('pulse');
-    fab.innerHTML = '\u{1F507}';
-    prompt.classList.remove('show');
-  }
-  bgm.addEventListener('play', onPlay);
-  bgm.addEventListener('pause', onPause);
-
-  function attempt(){
-    const p = bgm.play();
-    if(p && p.catch) p.catch(()=>{ prompt.classList.add('show'); });
+  function updateButton() {
+    playing = !bgm.paused;
+    fab.innerHTML = playing ? '♫' : '♪';
+    fab.classList.toggle('pulse', playing);
+    fab.setAttribute(
+      'aria-label',
+      playing ? 'Pause wedding music' : 'Play wedding music'
+    );
   }
 
-  // 1. Try instant autoplay on page load
-  window.addEventListener('load', attempt);
+  bgm.addEventListener('play', updateButton);
+  bgm.addEventListener('pause', updateButton);
 
-    // 2. Start music after the visitor's first interaction
-  ['pointerdown', 'keydown'].forEach(function(ev) {
-    document.addEventListener(ev, function startMusic() {
-      attempt();
-    }, { once: true });
-  });
+  // Play or pause when the visitor taps the music button
+  fab.addEventListener('click', async function () {
+    try {
+      if (bgm.paused) {
+        await bgm.play();
+      } else {
+        bgm.pause();
+      }
+    } catch (error) {
+      console.error('Music playback failed:', error);
+      alert('Music could not start. Please reload and try again.');
+    }
   });
 
-  // 3. Floating button toggles music after it has started
-  fab.addEventListener('click', function(e){
-    e.stopPropagation();
-    if(playing){ bgm.pause(); } else { bgm.play().catch(()=>{ prompt.classList.add('show'); }); }
+  // Attempt autoplay; browsers may block it
+  window.addEventListener('load', function () {
+    bgm.play().catch(function (error) {
+      console.log('Autoplay blocked. Tap the music button.');
+    });
   });
 })();
-
 </script>
+
 </body>
 </html>
