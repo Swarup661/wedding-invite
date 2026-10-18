@@ -147,8 +147,11 @@ footer .f-small{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;ma
 </head>
 <body>
 
-<audio id="bgm" src="perfect-ed-sheeran.mp3" loop preload="auto"></audio>
-
+<audio id="bgm"
+       src="./perfect-ed-sheeran.mp3"
+       autoplay
+       loop
+       preload="auto"></audio>
 <canvas id="petals"></canvas>
 
 <header class="hero">
@@ -367,12 +370,12 @@ footer .f-small{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;ma
   // 1. Try instant autoplay on page load
   window.addEventListener('load', attempt);
 
-  // 2. If blocked, the first tap/scroll anywhere starts it (browser requirement)
-  ['pointerdown','touchstart','keydown'].forEach(function(ev){
-    document.addEventListener(ev, function once(){
+    // 2. Start music after the visitor's first interaction
+  ['pointerdown', 'keydown'].forEach(function(ev) {
+    document.addEventListener(ev, function startMusic() {
       attempt();
-      document.removeEventListener(ev, once);
-    });
+    }, { once: true });
+  });
   });
 
   // 3. Floating button toggles music after it has started
