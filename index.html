@@ -167,9 +167,6 @@ footer .f-small{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;ma
 }
 
 .music-fab.show.pulse {
-  animation: none;
-}
-.music-fab.show.pulse {
   opacity: 1;
   animation: none;
 }
@@ -408,14 +405,22 @@ footer .f-small{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;ma
   let playing = false;
 
   function updateButton() {
-    playing = !bgm.paused;
-    fab.innerHTML = playing ? '♫' : '♪';
-    fab.classList.toggle('pulse', playing);
-    fab.setAttribute(
-      'aria-label',
-      playing ? 'Pause wedding music' : 'Play wedding music'
-    );
+  playing = !bgm.paused;
+
+  if (playing) {
+    fab.classList.remove('show');
+  } else {
+    fab.classList.add('show');
   }
+
+  fab.classList.toggle('pulse', playing);
+  fab.innerHTML = playing ? '♫' : '♪';
+
+  fab.setAttribute(
+    'aria-label',
+    playing ? 'Music playing' : 'Play wedding music'
+  );
+}
 
   bgm.addEventListener('play', updateButton);
   bgm.addEventListener('pause', updateButton);
